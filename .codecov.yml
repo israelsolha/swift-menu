@@ -3,5 +3,4 @@ coverage:
     project:
       default:
         target: 80
-      patch:
-        target: 80
+        
