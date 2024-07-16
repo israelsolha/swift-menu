@@ -1,0 +1,14 @@
+database:
+  host: localhost
+  port: 3390
+  username: root
+  password: env:DB_PASSWORD
+  schema: swift-menu-db
+
+oauth2:
+  client-id: env:OAUTH_CLIENT_ID
+  client-secret: env:OAUTH_CLIENT_SECRET
+  callback-url: http://localhost:8080/auth/google/callback
+
+cookie-store:
+  secret: env:COOKIE_SECRET
