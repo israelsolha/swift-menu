@@ -41,7 +41,11 @@ func (h *homeHandler) handleHome(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprint(w, `<html><body><a href="/login">Google Log In</a></body></html>`)
 		return
 	}
-	user, _ := h.userGateway.GetUserByEmail(session.Values["email"].(string))
+	user, err := h.userGateway.GetUserByEmail(session.Values["email"].(string))
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
 	html := fmt.Sprintf(`<html><body>
 		Welcome %s! You are logged in.<br>
 		<img src="%s" alt="Description of Image" /><br>

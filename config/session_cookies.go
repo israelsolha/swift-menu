@@ -15,8 +15,8 @@ type sessionCookieStore struct {
 	sessionString string
 }
 
-func NewSessionCookieStore(cookieSecret string) SessionCookieStore {
-	store := sessions.NewCookieStore([]byte(cookieSecret))
+func NewSessionCookieStore(cookieStoreConfig CookieStore) SessionCookieStore {
+	store := sessions.NewCookieStore([]byte(cookieStoreConfig.Secret))
 	store.Options = &sessions.Options{
 		Path:     "/",
 		MaxAge:   24 * 3600, // Session expiration time in seconds

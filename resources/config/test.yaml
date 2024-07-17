@@ -1,0 +1,26 @@
+api:
+  port: 8077
+
+database:
+  host: localhost
+  port: 3399
+  username: root
+  password: 123456
+  schema: swift-menu-db
+
+oauth2:
+  client-id: OAUTH_CLIENT_ID
+  client-secret: OAUTH_CLIENT_SECRET
+  callback-url: http://localhost:${api.port}/auth/google/callback
+  auth-url: http://localhost:9999/o/oauth2/auth
+  token-url: http://localhost:9999/token
+  device-auth-url: http://localhost:9999/device/code
+  auth-style: 1
+
+cookie-store:
+  secret: COOKIE_SECRET
+
+docker:
+  tear-down-tags: 
+  - "--volumes"
+  - "--remove-orphans"

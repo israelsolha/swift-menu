@@ -1,3 +1,6 @@
+api:
+  port: 8080
+
 database:
   host: localhost
   port: 3390
@@ -9,6 +12,13 @@ oauth2:
   client-id: env:OAUTH_CLIENT_ID
   client-secret: env:OAUTH_CLIENT_SECRET
   callback-url: http://localhost:8080/auth/google/callback
+  auth-url: https://accounts.google.com/o/oauth2/auth
+  token-url: https://oauth2.googleapis.com/token
+  device-auth-url: https://oauth2.googleapis.com/device/code
+  auth-style: 1
 
 cookie-store:
   secret: env:COOKIE_SECRET
+
+docker:
+  tear-down-tags:

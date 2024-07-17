@@ -3,16 +3,20 @@ package config
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
+	"swift-menu-session/utils"
 
 	"github.com/spf13/viper"
 )
 
 func LoadConfig(env string) Config {
-	fmt.Println(env)
+	projectRoot := utils.FindProjectRoot()
+	configPath := filepath.Join(projectRoot, "resources/config")
+
 	viper.SetConfigName(env)
 	viper.SetConfigType("yaml")
-	viper.AddConfigPath("../../resources")
+	viper.AddConfigPath(configPath)
 
 	if err := viper.ReadInConfig(); err != nil {
 		panic(fmt.Errorf("error reading config file: %w", err))

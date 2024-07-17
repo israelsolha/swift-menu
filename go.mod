@@ -3,7 +3,6 @@ module swift-menu-session
 go 1.22.5
 
 require (
-	github.com/golang-migrate/migrate v3.5.4+incompatible
 	github.com/gorilla/mux v1.8.1
 	github.com/gorilla/sessions v1.3.0
 	github.com/spf13/viper v1.19.0
@@ -16,12 +15,11 @@ require (
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
 	github.com/rogpeppe/go-internal v1.12.0 // indirect
 	go.uber.org/atomic v1.9.0 // indirect
+	golang.org/x/net v0.27.0 // indirect
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 )
 
 require (
-	cloud.google.com/go/compute v1.24.0 // indirect
-	cloud.google.com/go/compute/metadata v0.2.3 // indirect
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
 	github.com/go-sql-driver/mysql v1.8.1
 	github.com/golang-migrate/migrate/v4 v4.17.1
