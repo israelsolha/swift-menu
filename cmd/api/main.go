@@ -13,40 +13,28 @@ import (
 
 func main() {
 	env := os.Getenv("env")
-	conf, err := config.LoadConfig(env)
-	if err != nil {
-		panic(err)
-	}
-
-	db, err := config.NewDb(conf)
-	if err != nil {
-		panic(err)
-	}
+	conf := config.LoadConfig(env)
+	db := config.NewDb(conf)
+	defer db.Close()
 
 	oauthConfig := config.NewOauth2Config(conf)
-
 	userGateway := mysql.NewUserGateway(db)
 
-	query := `
-    CREATE TABLE IF NOT EXISTS users (
-		id INT AUTO_INCREMENT PRIMARY KEY,
-		email VARCHAR(255) NOT NULL UNIQUE,
-		profile_picture VARCHAR(255),
-		name VARCHAR(100) NOT NULL,
-		created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-		updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-		INDEX idx_email (email)
-	);`
-
-	_, err = db.Exec(query)
-	if err != nil {
-		panic(err)
-	}
+	sessionCookieStore := config.NewSessionCookieStore(conf.CookieStore.Secret)
 
 	r := mux.NewRouter()
 
-	sessionHandler := handlers.NewSessionHandler(oauthConfig, userGateway, conf.CookieStore.Secret)
-	sessionHandler.HandleSession(r)
+	loginHandler := handlers.NewLoginHandler(oauthConfig, userGateway, sessionCookieStore)
+	loginHandler.ServeLogin(r)
+
+	logoutHandler := handlers.NewLogoutHandler(sessionCookieStore)
+	logoutHandler.ServeLogout(r)
+
+	homeHandler := handlers.NewHomeHandler(sessionCookieStore, userGateway)
+	homeHandler.ServeHome(r)
+
+	protectedHandler := handlers.NewProtectedHandler(userGateway, sessionCookieStore)
+	protectedHandler.ServeProtected(r)
 
 	log.Println("Starting server on :8080")
 	log.Fatal(http.ListenAndServe("localhost:8080", r))
