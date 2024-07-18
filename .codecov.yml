@@ -6,6 +6,7 @@ coverage:
         branches:
           min: 90
     patch:
-      target: auto
-        branches:
-          min: 90
+      default:
+        target: auto
+          branches:
+            min: 90
