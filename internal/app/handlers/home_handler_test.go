@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"net/http/httptest"
 	"swift-menu-session/internal/domain/entities"
 	"swift-menu-session/testutils"
 	"testing"
@@ -62,25 +61,12 @@ func TestHomeBeingLogged(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	w := httptest.NewRecorder()
-	client := &http.Client{}
-
 	req, err := http.NewRequest("GET", "http://localhost:8077", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	session, _ := a.SessionCookieStore.GetCookie(req)
-	session.Values["authenticated"] = true
-	session.Values["email"] = email
-	session.Save(req, w)
-
-	cookies := w.Result().Cookies()
-	for _, cookie := range cookies {
-		req.AddCookie(cookie)
-	}
-
-	res, err := client.Do(req)
+	res, err := testutils.PerformRequestWithCookie(a.SessionCookieStore, req, user)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -104,25 +90,12 @@ func TestHomeBeingLoggedWithoutUser(t *testing.T) {
 	a := testutils.PreapreIntegrationTest()
 	defer testutils.TearDown(a)
 
-	w := httptest.NewRecorder()
-	client := &http.Client{}
-
 	req, err := http.NewRequest("GET", "http://localhost:8077", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	session, _ := a.SessionCookieStore.GetCookie(req)
-	session.Values["authenticated"] = true
-	session.Values["email"] = "test@test.com"
-	session.Save(req, w)
-
-	cookies := w.Result().Cookies()
-	for _, cookie := range cookies {
-		req.AddCookie(cookie)
-	}
-
-	res, err := client.Do(req)
+	res, err := testutils.PerformRequestWithCookie(a.SessionCookieStore, req, entities.User{})
 	if err != nil {
 		t.Fatal(err)
 	}

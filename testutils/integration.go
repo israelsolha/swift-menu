@@ -5,8 +5,11 @@ import (
 	"database/sql"
 	"log"
 	"net/http"
+	"net/http/httptest"
 	"os"
 	"swift-menu-session/app"
+	"swift-menu-session/config"
+	"swift-menu-session/internal/domain/entities"
 	"time"
 )
 
@@ -24,6 +27,28 @@ func PreapreIntegrationTest() *app.App {
 func TearDown(a *app.App) {
 	dropAllTables(a.Db)
 	shutDownServer(a.Srv)
+}
+
+func PerformRequestWithCookie(store config.SessionCookieStore, r *http.Request, user entities.User) (*http.Response, error) {
+	w := httptest.NewRecorder()
+	client := &http.Client{}
+
+	req, err := http.NewRequest("GET", "http://localhost:8077", nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	session, _ := store.GetCookie(req)
+	session.Values["authenticated"] = true
+	session.Values["email"] = user.Email
+	session.Save(req, w)
+
+	cookies := w.Result().Cookies()
+	for _, cookie := range cookies {
+		req.AddCookie(cookie)
+	}
+
+	return client.Do(req)
 }
 
 func dropAllTables(db *sql.DB) {

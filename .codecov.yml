@@ -6,11 +6,4 @@ coverage:
     patch:
       default:
         target: 90
-
-parsers:
-  gcov:
-    branch_detection:
-      conditional: yes
-      loop: yes
-      method: no
-      macro: no
+        

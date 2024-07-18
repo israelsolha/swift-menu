@@ -27,7 +27,11 @@ func (l *loginCallbackHandler) ServeLogout(r *mux.Router) {
 }
 
 func (l *loginCallbackHandler) handleLogout(w http.ResponseWriter, r *http.Request) {
-	session, _ := l.store.GetCookie(r)
+	session, err := l.store.GetCookie(r)
+	if err != nil {
+		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
+		return
+	}
 
 	session.Values["authenticated"] = false
 	session.Values["email"] = nil
