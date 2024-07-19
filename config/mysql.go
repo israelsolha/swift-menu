@@ -24,7 +24,7 @@ func NewDb(databaseConfig Database) *sql.DB {
 }
 
 func createDb(databaseConfig Database) *sql.DB {
-	maxRetries := 5
+	maxRetries := 15
 	retryInterval := 2 * time.Second
 
 	var lastErr error
