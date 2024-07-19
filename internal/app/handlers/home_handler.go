@@ -9,6 +9,17 @@ import (
 	"github.com/gorilla/mux"
 )
 
+var (
+	loggedOutBody = `<html><body><a href="/login">Google Log In</a></body></html>`
+	loggedInBody  = `<html><body>
+		Welcome %s! You are logged in.<br>
+		<img src="%s" alt="Description of Image" /><br>
+		%s<br>
+		<a href="/protected">Protected Endpoint</a><br>
+		<a href="/logout">Logout</a>
+		</body></html>`
+)
+
 type HomeHandlerInterface interface {
 	ServeHome(r *mux.Router)
 }
@@ -35,10 +46,13 @@ func (l *homeHandler) ServeHome(r *mux.Router) {
 }
 
 func (h *homeHandler) handleHome(w http.ResponseWriter, r *http.Request) {
-	session, _ := h.store.GetCookie(r)
-	auth, ok := session.Values["authenticated"].(bool)
-	if !ok || !auth {
-		fmt.Fprint(w, `<html><body><a href="/login">Google Log In</a></body></html>`)
+	session, err := h.store.GetCookie(r)
+	if err != nil {
+		fmt.Fprint(w, loggedOutBody)
+		return
+	}
+	if auth, ok := session.Values["authenticated"].(bool); !ok || !auth {
+		fmt.Fprint(w, loggedOutBody)
 		return
 	}
 	user, err := h.userGateway.GetUserByEmail(session.Values["email"].(string))
@@ -46,13 +60,6 @@ func (h *homeHandler) handleHome(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	html := fmt.Sprintf(`<html><body>
-		Welcome %s! You are logged in.<br>
-		<img src="%s" alt="Description of Image" /><br>
-		%s<br>
-		<a href="/protected">Protected Endpoint</a><br>
-		<a href="/logout">Logout</a>
-		</body></html>`,
-		user.Name, user.ProfilePicture, user.Email)
+	html := fmt.Sprintf(loggedInBody, user.Name, user.ProfilePicture, user.Email)
 	w.Write([]byte(html))
 }
