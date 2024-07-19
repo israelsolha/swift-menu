@@ -14,13 +14,11 @@ func TestHomeWithoutBeingLogged(t *testing.T) {
 	defer testutils.TearDown(a)
 	expectedBody := `<html><body><a href="/login">Google Log In</a></body></html>`
 
-	// Make the HTTP request to the server
 	res, err := http.Get("http://localhost:8077")
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	// Check the status code
 	if res.StatusCode != http.StatusOK {
 		t.Fatalf("Expected status code 200, got %d", res.StatusCode)
 	}

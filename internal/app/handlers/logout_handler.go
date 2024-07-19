@@ -33,9 +33,7 @@ func (l *loginCallbackHandler) handleLogout(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	session.Values["authenticated"] = false
-	session.Values["email"] = nil
-	session.Values["token"] = nil
+	session.Values = make(map[interface{}]interface{})
 	session.Options.MaxAge = -1
 	session.Save(r, w)
 

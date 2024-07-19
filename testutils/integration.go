@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"log"
 	"net/http"
+	"net/http/cookiejar"
 	"net/http/httptest"
 	"os"
 	"swift-menu-session/app"
@@ -20,7 +21,7 @@ func PreapreIntegrationTest() *app.App {
 	// Start the API server
 	a := app.SetupAPP()
 	app.SetupHandlers(a)
-
+	time.Sleep(100 * time.Millisecond)
 	return a
 }
 
@@ -31,24 +32,24 @@ func TearDown(a *app.App) {
 
 func PerformRequestWithCookie(store config.SessionCookieStore, r *http.Request, user entities.User) (*http.Response, error) {
 	w := httptest.NewRecorder()
-	client := &http.Client{}
-
-	req, err := http.NewRequest("GET", "http://localhost:8077", nil)
+	jar, err := cookiejar.New(nil)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("Failed to create cookie jar: %v", err)
 	}
+	client := &http.Client{Jar: jar}
 
-	session, _ := store.GetCookie(req)
+	session, _ := store.GetCookie(r)
 	session.Values["authenticated"] = true
 	session.Values["email"] = user.Email
-	session.Save(req, w)
+	session.Save(r, w)
 
+	client.Jar.SetCookies(r.URL, w.Result().Cookies())
 	cookies := w.Result().Cookies()
 	for _, cookie := range cookies {
-		req.AddCookie(cookie)
+		r.AddCookie(cookie)
 	}
 
-	return client.Do(req)
+	return client.Do(r)
 }
 
 func dropAllTables(db *sql.DB) {
