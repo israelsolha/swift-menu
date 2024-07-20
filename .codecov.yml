@@ -1,8 +1,15 @@
+codecov:
+  require_ci_to_pass: yes
+
 coverage:
   status:
     project:
       default:
-        target: 1
+        target: 90
     patch:
       default:
-        target: 80
+        target: 90
+
+ignore:
+  - "mocks/**"
+  - "testutils/**"
