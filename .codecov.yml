@@ -11,5 +11,5 @@ coverage:
         target: 90
 
 ignore:
-  - "**/mocks/**"
-  - "**/testutils/**"
+  - "mocks/**"
+  - "testutils/**"
